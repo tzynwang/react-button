@@ -25,44 +25,43 @@ const defaultButtonStyle = css({
   color: '#fff',
   cursor: 'pointer',
 });
+const rippleSpanStyle = css({
+  position: 'absolute',
+  borderRadius: '50%',
+  backgroundColor: 'rgba(255, 255, 255, .3)',
+  transform: 'scale(0)',
+  animation: `${rippleAnimation} .6s ease`,
+});
 
 function Button(props: ButtonProps): React.ReactElement {
   /* States */
   const { label, disableRipple = false, type, className, ...rest } = props;
   const buttonRef = createRef<HTMLButtonElement>();
+  const rippleRef = createRef<HTMLSpanElement>();
 
   /* Function */
   const playRipple = useCallback(
     (e: MouseEvent): void => {
       if (disableRipple) return;
       const target = e.currentTarget as HTMLButtonElement;
-      const rippleSpan = document.createElement('span');
       const diameter = Math.max(target.clientWidth, target.clientHeight);
       const radius = diameter / 2;
-      rippleSpan.style.width = rippleSpan.style.height = `${diameter}px`;
-      rippleSpan.style.left = `${e.clientX - (target.offsetLeft + radius)}px`;
-      rippleSpan.style.top = `${e.clientY - (target.offsetTop + radius)}px`;
-      rippleSpan.classList.add(
-        css({
-          position: 'absolute',
-          borderRadius: '50%',
-          backgroundColor: 'rgba(255, 255, 255, .3)',
-          opacity: 1,
-          transform: 'scale(0)',
-          animation: `${rippleAnimation} .6s ease`,
-        })
-      );
-      target.appendChild(rippleSpan);
+      const ripple = rippleRef.current;
+      if (ripple) {
+        ripple.style.width = ripple.style.height = `${diameter}px`;
+        ripple.style.left = `${e.clientX - (target.offsetLeft + radius)}px`;
+        ripple.style.top = `${e.clientY - (target.offsetTop + radius)}px`;
+        ripple.classList.add(rippleSpanStyle);
+      }
     },
-    [disableRipple]
+    [disableRipple, rippleRef]
   );
   const removeRippleSpan = useCallback((): void => {
-    buttonRef.current?.childNodes.forEach((child) => {
-      if (child.nodeType === 1) {
-        child.remove();
-      }
-    });
-  }, [buttonRef]);
+    const ripple = rippleRef.current;
+    if (ripple) {
+      ripple.classList.remove(rippleSpanStyle);
+    }
+  }, [rippleRef]);
 
   /* Hooks */
   useEffect(() => {
@@ -84,6 +83,7 @@ function Button(props: ButtonProps): React.ReactElement {
       {...rest}
     >
       {label ? label : 'button'}
+      <span role="presentation" ref={rippleRef} />
     </button>
   );
 }
