@@ -1,31 +1,26 @@
-import React, { memo } from 'react'
-import classNames from 'classnames'
-
-import Styles from './index.module.css'
+import React, { memo } from 'react';
+import { css } from '@emotion/css';
+import cn from 'classnames';
+import Button from '@Components/Common/Button';
 
 function App(): React.ReactElement {
+  /* Main */
   return (
-    <main className={classNames(Styles.main)}>
-      <div>
-        Hello world, this React APP is created by{' '}
-        <code className={classNames(Styles.mainCode)}>npx create-react-app with template --choffee</code>.
-      </div>
-      <div>
-        Author: Charlie (Tzu Yin) |{' '}
-        <a href="https://github.com/tzynwang" target="_blank" className={Styles.mainAnchor}>
-          GitHub
-        </a>{' '}
-        |{' '}
-        <a href="https://tzynwang.github.io/" target="_blank" className={Styles.mainAnchor}>
-          Blog
-        </a>{' '}
-        |{' '}
-        <a href="https://www.npmjs.com/~tzyn.wang" target="_blank" className={Styles.mainAnchor}>
-          npm Packages
-        </a>
-      </div>
-    </main>
-  )
+    <div
+      className={cn(
+        css({
+          height: '100%',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          gap: '16px',
+        })
+      )}
+    >
+      <Button label="normal button" />
+      <Button label="disabled button" disabled />
+    </div>
+  );
 }
 
-export default memo(App)
+export default memo(App);
