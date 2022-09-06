@@ -5,7 +5,7 @@ import type { ButtonProps } from './types';
 
 const rippleAnimation = keyframes`
 to {
-  transform: scale(1.5);
+  transform: scale(1.2);
   opacity: 0;
 }
 `;
@@ -14,7 +14,10 @@ const defaultButtonStyle = css({
   minHeight: '28px',
   position: 'relative',
   overflow: 'hidden',
-  display: 'inline-block',
+  display: 'inline-flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+  gap: '4px',
   padding: '8px 16px',
   border: 'none',
   borderRadius: '4px',
@@ -36,7 +39,13 @@ const disabledButtonStyle = css({
   cursor: 'default',
   pointerEvents: 'none',
 });
-const rippleSpanStyle = css({
+const rippleContainer = css({
+  position: 'absolute',
+  inset: 0,
+  borderRadius: 'inherit',
+  pointerEvents: 'none',
+});
+const rippleStyle = css({
   position: 'absolute',
   borderRadius: '50%',
   backgroundColor: 'rgba(255, 255, 255, .3)',
@@ -47,7 +56,7 @@ const rippleSpanStyle = css({
 function Button(props: ButtonProps): React.ReactElement {
   /* States */
   const {
-    label,
+    children,
     disableRipple = false,
     className,
     disabled,
@@ -55,7 +64,7 @@ function Button(props: ButtonProps): React.ReactElement {
     ...rest
   } = props;
   const buttonRef = createRef<HTMLButtonElement>();
-  const rippleRef = createRef<HTMLSpanElement>();
+  const rippleContainerRef = createRef<HTMLSpanElement>();
 
   /* Function */
   const playRipple = useCallback(
@@ -64,22 +73,33 @@ function Button(props: ButtonProps): React.ReactElement {
       const target = e.currentTarget as HTMLButtonElement;
       const diameter = Math.max(target.clientWidth, target.clientHeight);
       const radius = diameter / 2;
-      const ripple = rippleRef.current;
-      if (ripple) {
-        ripple.style.width = ripple.style.height = `${diameter}px`;
-        ripple.style.left = `${e.clientX - (target.offsetLeft + radius)}px`;
-        ripple.style.top = `${e.clientY - (target.offsetTop + radius)}px`;
-        ripple.classList.add(rippleSpanStyle);
+      const rippleContainer = rippleContainerRef.current;
+      if (rippleContainer) {
+        const rippleEffect = document.createElement('span');
+        rippleEffect.style.width = rippleEffect.style.height = `${diameter}px`;
+        rippleEffect.style.left = `${
+          e.clientX - (target.offsetLeft + radius)
+        }px`;
+        rippleEffect.style.top = `${e.clientY - (target.offsetTop + radius)}px`;
+        rippleEffect.classList.add(rippleStyle);
+        rippleContainer.appendChild(rippleEffect);
       }
     },
-    [disableRipple, rippleRef]
+    [disableRipple, rippleContainerRef]
   );
   const removeRipple = useCallback((): void => {
-    const ripple = rippleRef.current;
-    if (ripple) {
-      ripple.classList.remove(rippleSpanStyle);
+    const rippleContainer = rippleContainerRef.current;
+    if (rippleContainer) {
+      rippleContainer.childNodes.forEach((node) => {
+        if (node.nodeType === 1) {
+          const elementNode = node as HTMLElement;
+          if (elementNode.classList.contains(rippleStyle)) {
+            elementNode.remove();
+          }
+        }
+      });
     }
-  }, [rippleRef]);
+  }, [rippleContainerRef]);
 
   /* Hooks */
   useEffect(() => {
@@ -101,12 +121,16 @@ function Button(props: ButtonProps): React.ReactElement {
         className
       )}
       disabled={disabled}
-      ref={buttonRef}
       type={type ? type : 'button'}
       {...rest}
+      ref={buttonRef}
     >
-      {label ? label : 'button'}
-      <span role="presentation" ref={rippleRef} />
+      {children ? children : 'button'}
+      <span
+        className={cn(rippleContainer)}
+        role="presentation"
+        ref={rippleContainerRef}
+      />
     </button>
   );
 }

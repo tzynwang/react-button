@@ -17,8 +17,12 @@ function App(): React.ReactElement {
         })
       )}
     >
-      <Button label="normal button" />
-      <Button label="disabled button" disabled />
+      <Button />
+      <Button disabled>
+        <span>🦊</span>
+        disabled button
+        <span>🌲</span>
+      </Button>
     </div>
   );
 }
