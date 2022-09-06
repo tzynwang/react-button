@@ -56,7 +56,7 @@ function Button(props: ButtonProps): React.ReactElement {
     },
     [disableRipple, rippleRef]
   );
-  const removeRippleSpan = useCallback((): void => {
+  const removeRipple = useCallback((): void => {
     const ripple = rippleRef.current;
     if (ripple) {
       ripple.classList.remove(rippleSpanStyle);
@@ -67,12 +67,12 @@ function Button(props: ButtonProps): React.ReactElement {
   useEffect(() => {
     const button = buttonRef.current;
     button?.addEventListener('click', playRipple);
-    button?.addEventListener('animationend', removeRippleSpan);
+    button?.addEventListener('animationend', removeRipple);
     return () => {
       button?.removeEventListener('click', playRipple);
-      button?.removeEventListener('animationend', removeRippleSpan);
+      button?.removeEventListener('animationend', removeRipple);
     };
-  }, [buttonRef, playRipple, removeRippleSpan]);
+  }, [buttonRef, playRipple, removeRipple]);
 
   /* Main */
   return (
