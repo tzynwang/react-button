@@ -13,10 +13,12 @@ function App(): React.ReactElement {
           display: 'flex',
           justifyContent: 'center',
           alignItems: 'center',
+          gap: '16px',
         })
       )}
     >
-      <Button />
+      <Button label="normal button" />
+      <Button label="disabled button" disabled />
     </div>
   );
 }

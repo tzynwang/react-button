@@ -5,7 +5,7 @@ import type { ButtonProps } from './types';
 
 const rippleAnimation = keyframes`
 to {
-  transform: scale(2);
+  transform: scale(1.5);
   opacity: 0;
 }
 `;
@@ -18,24 +18,42 @@ const defaultButtonStyle = css({
   padding: '8px 16px',
   border: 'none',
   borderRadius: '4px',
-  fontSize: 'inherit',
+  fontSize: '14px',
   fontFamily: 'inherit',
   fontWeight: 'inherit',
+  letterSpacing: '.5px',
+  textTransform: 'uppercase',
   backgroundColor: '#4e342e',
   color: '#fff',
+  transition: 'background-color .2s ease',
   cursor: 'pointer',
+  '&:hover': {
+    backgroundColor: '#362420',
+  },
+});
+const disabledButtonStyle = css({
+  backgroundColor: 'rgba(113, 92, 87, .4)',
+  cursor: 'default',
+  pointerEvents: 'none',
 });
 const rippleSpanStyle = css({
   position: 'absolute',
   borderRadius: '50%',
   backgroundColor: 'rgba(255, 255, 255, .3)',
   transform: 'scale(0)',
-  animation: `${rippleAnimation} .6s ease`,
+  animation: `${rippleAnimation} .7s ease`,
 });
 
 function Button(props: ButtonProps): React.ReactElement {
   /* States */
-  const { label, disableRipple = false, type, className, ...rest } = props;
+  const {
+    label,
+    disableRipple = false,
+    className,
+    disabled,
+    type,
+    ...rest
+  } = props;
   const buttonRef = createRef<HTMLButtonElement>();
   const rippleRef = createRef<HTMLSpanElement>();
 
@@ -77,9 +95,14 @@ function Button(props: ButtonProps): React.ReactElement {
   /* Main */
   return (
     <button
-      type={type ? type : 'button'}
-      className={cn(defaultButtonStyle, className)}
+      className={cn(
+        defaultButtonStyle,
+        disabled && disabledButtonStyle,
+        className
+      )}
+      disabled={disabled}
       ref={buttonRef}
+      type={type ? type : 'button'}
       {...rest}
     >
       {label ? label : 'button'}
