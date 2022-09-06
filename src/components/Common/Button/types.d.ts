@@ -2,6 +2,6 @@ import React from 'react';
 
 export interface ButtonProps
   extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-  label?: string;
+  children?: React.ReactNode;
   disableRipple?: boolean;
 }
